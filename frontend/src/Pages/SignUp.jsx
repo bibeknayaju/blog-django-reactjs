@@ -1,11 +1,11 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -37,7 +37,7 @@ function SignUp() {
     setPassword("");
     setConfirmPassword("");
     setName("");
-    navigate("/");
+    history.push("/");
   }
 
   return (

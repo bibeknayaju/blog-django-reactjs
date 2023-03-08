@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 function Hero({ id, title, description }) {
+  const { user } = useContext(AuthContext);
+
   return (
     <div key={id} className=" flex m-auto max-w-7xl mb-5">
       <div className="p-8 flex-col max-w-7xl w-full  shadow-md text-black mt-5 rounded-lg bg-slate-100">

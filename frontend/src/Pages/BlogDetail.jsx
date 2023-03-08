@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NavBar from "../Components/NavBar";
+import AuthContext from "../context/AuthContext";
 function BlogDetail({ props }) {
   const { index, title } = useParams(); // extract the id parameter from the URL
   const [blog, setBlog] = useState({});

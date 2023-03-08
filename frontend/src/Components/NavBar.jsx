@@ -1,28 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import Modal from "react-modal";
+import AuthContext from "../context/AuthContext";
 
 function NavBar() {
-  // const customStyles = {
-  //   content: {
-  //     top: "50%",
-  //     left: "50%",
-  //     right: "auto",
-  //     bottom: "auto",
-  //     marginRight: "-50%",
-  //     transform: "translate(-50%, -50%)",
-  //   },
-  // };
-
-  // const [modalIsOpen, setIsOpen] = useState(false);
-
-  // function openModal() {
-  //   setIsOpen(true);
-  // }
-
-  // function closeModal() {
-  //   setIsOpen(false);
-  // }
+  const { user, logoutUser } = useContext(AuthContext);
 
   return (
     <div className="sticky top-0 flex-col justify-between items-center md:items-center p-5 text-white m-auto bg-navbar">
@@ -39,66 +20,40 @@ function NavBar() {
             </h1>
           </Link>
 
-          {/* <div className="hidden gap-2 md:flex items-center justify-center">
-            <Link to="/login">
-              <button className="text-xl font-semibold">Log in</button>
-            </Link>
-            <Link to="/signup">
-              <button className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600	 p-4">
-                Sign Up
-              </button>
-            </Link>
-          </div> */}
-          <div>
-            <Link to="/login">
-              <button
-                className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600 pt-4 pb-4 pl-5 pr-5"
-                // onClick={openModal}
-              >
-                Login
-              </button>
-            </Link>
-
-            <Link to="/signup">
-              <button className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600 pt-4 pb-4 pl-5 pr-5">
-                Sign Up
-              </button>
-            </Link>
-          </div>
-
-          {/* <Modal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
-            style={customStyles}
-            contentLabel="Login Modal">
-            <div className="flex flex-col justify-center items-center w-72">
-              <h2 className="mb-5 font-Poppins text-lg font-semibold">Login</h2>
-              <form method="POST">
-                <div>
-                  <h3>Username</h3>
-                  <input
-                    type="text"
-                    className="outline-none border-2 border-gray-300 pl-3 pr-3 rounded-lg"
-                    placeholder="Enter your username..."
-                  />
-                </div>
-                <div>
-                  <h3>Password</h3>
-                  <input
-                    type="password"
-                    className="outline-none border-2 border-gray-300 pl-3 pr-3 rounded-lg"
-                    placeholder="Enter your username..."
-                  />
-                </div>
-                <button className="text-xl font-semibold border-2 rounded-lg mt-5 border-orange-400 pt-2 pb-2 pl-5 pr-5">
+          {user ? (
+            <button
+              onClick={logoutUser}
+              className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600 pt-4 pb-4 pl-5 pr-5">
+              Log out | {user.username}
+            </button>
+          ) : (
+            <div>
+              <Link to="/login">
+                <button className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600 pt-4 pb-4 pl-5 pr-5">
                   Login
                 </button>
-              </form>
+              </Link>
+
+              <Link to="/signup">
+                <button className="text-xl font-semibold border-2 rounded-lg ml-4 border-white-600 pt-4 pb-4 pl-5 pr-5">
+                  Sign Up
+                </button>
+              </Link>
             </div>
-          </Modal> */}
+          )}
         </div>
       </div>
     </div>
+
+    // <div>
+    //   <Link to="/">Home</Link>
+    //   <span> | </span>
+    //   {user ? (
+    //     <p onClick={logoutUser}>Logout</p>
+    //   ) : (
+    //     <Link to="/login">Login</Link>
+    //   )}
+    // </div>
   );
 }
 

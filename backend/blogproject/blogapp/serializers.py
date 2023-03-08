@@ -1,14 +1,14 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Blog, Users
+from .models import Blog
 
 
 class BlogSerializer(ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['id', 'title', 'description']
+        fields = '__all__'
 
 
-class UsersSerializer(ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ['name', 'username', 'email', 'password']
+# class UsersSerializer(ModelSerializer):
+#     class Meta:
+#         model = Users
+#         fields = '__all__'

@@ -1,15 +1,21 @@
 # from django.shortcuts import render
-# from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from django.http import JsonResponse
 from rest_framework.response import Response
-from .serializers import BlogSerializer, UsersSerializer
+from .serializers import BlogSerializer
 from .models import Blog
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from blogapp.models import Blog
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+from django.contrib.auth.models import User
 # Create your views here.
 
 
@@ -54,9 +60,12 @@ def getRoutes(request):
 
 
 @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
 def getBlog(request):
-    blogs = Blog.objects.all()
-    serializer = BlogSerializer(blogs, many=True)
+    # user = request.user
+    # blog = user.blog_set.all()
+    blog = Blog.objects.all()
+    serializer = BlogSerializer(blog, many=True)
     return Response(serializer.data)
 
 
@@ -71,8 +80,10 @@ def createBlog(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getBlogDetail(request, pk):
-    blog = Blog.objects.get(id=pk)
+    user = request.user
+    blog = Blog.blog_set.get(id=pk)
     serializer = BlogSerializer(blog, many=False)
     return Response(serializer.data)
 
@@ -100,36 +111,51 @@ def updateBlog(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# for signup page
-@api_view(['POST'])
-def SignupPage(request):
-    serializer = UsersSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# # for signup page
+# @api_view(['POST'])
+# def SignupPage(request):
+#     serializer = UsersSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-def LoginPage(request):
+# @api_view(['POST'])
+# def LoginPage(request):
 
-    # Get user credentials from request data
-    email = request.data.get('email')
-    password = request.data.get('password')
-    print("Email:", email, "Password:", password)
+#     # Get user credentials from request data
+#     email = request.data.get('email')
+#     password = request.data.get('password')
+#     print("Email:", email, "Password:", password)
 
-    # # Authenticate user by email and password
-    user = authenticate(request=request, email=email, password=password)
-    print(user)
-    # return HttpResponse("Wrong username or password")
-    # If user is authenticated, create or get token and return user data
-    if user:
-        token = Token.objects.get_or_create(user=user)
-        print("This is token brother", token)
-        serializer = UsersSerializer(user, fields=(
-            'name', 'username', 'email', 'password'))
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
+#     # # Authenticate user by email and password
+#     user = authenticate(request=request, email=email, password=password)
+#     print(user)
+#     # return HttpResponse("Wrong username or password")
+#     # If user is authenticated, create or get token and return user data
+#     if user:
+#         token = Token.objects.get_or_create(user=user)
+#         print("This is token brother", token)
+#         serializer = UsersSerializer(user, fields=(
+#             'name', 'username', 'email', 'password'))
+#         return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
 
-    # If user is not authenticated, return error response
-    return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+#     # If user is not authenticated, return error response
+#     return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        token['password'] = user.password
+
+        return token
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
